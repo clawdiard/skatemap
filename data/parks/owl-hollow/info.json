@@ -1,0 +1,54 @@
+{
+  "slug": "owl-hollow",
+  "name": "Owl Hollow Skatepark",
+  "borough": "staten_island",
+  "location": {
+    "lat": 40.553,
+    "lng": -74.158
+  },
+  "address": "Owl Hollow Soccer Fields, Staten Island, NY 10312",
+  "nearestSubway": "Eltingville (SIR)",
+  "parkType": "full_park",
+  "surfaceType": "smooth_concrete",
+  "sunExposure": "full_sun",
+  "drainage": "average",
+  "coveredPct": 0,
+  "isGated": false,
+  "hours": {
+    "open": "06:00",
+    "close": "21:00"
+  },
+  "features": [
+    {
+      "id": "bowl-1",
+      "type": "bowl",
+      "description": "Flow bowl, 5-7ft"
+    },
+    {
+      "id": "ledge-1",
+      "type": "ledge",
+      "count": 3,
+      "description": "Concrete ledges"
+    },
+    {
+      "id": "rail-1",
+      "type": "rail",
+      "count": 2,
+      "description": "Rail and flat bar"
+    },
+    {
+      "id": "bank-1",
+      "type": "bank",
+      "count": 2,
+      "description": "Banks"
+    },
+    {
+      "id": "qp-1",
+      "type": "quarter_pipe",
+      "count": 1,
+      "description": "Quarter pipe"
+    }
+  ],
+  "heroImage": "",
+  "updatedAt": "2026-02-11T00:00:00Z"
+}

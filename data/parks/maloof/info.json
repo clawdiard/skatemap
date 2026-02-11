@@ -1,0 +1,60 @@
+{
+  "slug": "maloof",
+  "name": "Maloof Skatepark",
+  "borough": "queens",
+  "location": {
+    "lat": 40.7467,
+    "lng": -73.8445
+  },
+  "address": "Flushing Meadows Corona Park, Queens, NY 11368",
+  "nearestSubway": "Mets-Willets Point (7)",
+  "parkType": "full_park",
+  "surfaceType": "smooth_concrete",
+  "sunExposure": "full_sun",
+  "drainage": "average",
+  "coveredPct": 0,
+  "isGated": false,
+  "hours": {
+    "open": "06:00",
+    "close": "21:00"
+  },
+  "features": [
+    {
+      "id": "bowl-1",
+      "type": "bowl",
+      "description": "Large clover bowl with deep end, 4-10ft"
+    },
+    {
+      "id": "ledge-1",
+      "type": "ledge",
+      "count": 5,
+      "description": "Granite and concrete ledges"
+    },
+    {
+      "id": "rail-1",
+      "type": "rail",
+      "count": 3,
+      "description": "Flat bars, handrail, kinked rail"
+    },
+    {
+      "id": "stairs-1",
+      "type": "stairs",
+      "count": 2,
+      "description": "4 and 6 stair sets"
+    },
+    {
+      "id": "gap-1",
+      "type": "gap",
+      "count": 2,
+      "description": "Gaps over planter and step"
+    },
+    {
+      "id": "hp-1",
+      "type": "half_pipe",
+      "count": 1,
+      "description": "Vert wall"
+    }
+  ],
+  "heroImage": "",
+  "updatedAt": "2026-02-11T00:00:00Z"
+}

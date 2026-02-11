@@ -1,0 +1,54 @@
+{
+  "slug": "mccarren",
+  "name": "McCarren Skatepark",
+  "borough": "brooklyn",
+  "location": {
+    "lat": 40.72,
+    "lng": -73.951
+  },
+  "address": "McCarren Park, N 12th St, Williamsburg, Brooklyn, NY 11249",
+  "nearestSubway": "Bedford Ave (L), Nassau Ave (G)",
+  "parkType": "full_park",
+  "surfaceType": "smooth_concrete",
+  "sunExposure": "full_sun",
+  "drainage": "average",
+  "coveredPct": 0,
+  "isGated": false,
+  "hours": {
+    "open": "06:00",
+    "close": "22:00"
+  },
+  "features": [
+    {
+      "id": "bowl-1",
+      "type": "bowl",
+      "description": "Flow bowl with hip and extensions, 5-7ft"
+    },
+    {
+      "id": "ledge-1",
+      "type": "ledge",
+      "count": 5,
+      "description": "Various height ledges with metal coping"
+    },
+    {
+      "id": "rail-1",
+      "type": "rail",
+      "count": 2,
+      "description": "Flat bar and handrail"
+    },
+    {
+      "id": "stairs-1",
+      "type": "stairs",
+      "count": 1,
+      "description": "4-stair"
+    },
+    {
+      "id": "bank-1",
+      "type": "bank",
+      "count": 2,
+      "description": "Banks with coping"
+    }
+  ],
+  "heroImage": "",
+  "updatedAt": "2026-02-11T00:00:00Z"
+}

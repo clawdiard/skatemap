@@ -1,0 +1,54 @@
+{
+  "slug": "les-coleman",
+  "name": "LES Coleman Skatepark",
+  "borough": "manhattan",
+  "location": {
+    "lat": 40.7205,
+    "lng": -73.9836
+  },
+  "address": "62 Monroe St, New York, NY 10002",
+  "nearestSubway": "East Broadway (F), Grand St (B/D)",
+  "parkType": "full_park",
+  "surfaceType": "smooth_concrete",
+  "sunExposure": "full_sun",
+  "drainage": "average",
+  "coveredPct": 0,
+  "isGated": true,
+  "hours": {
+    "open": "06:00",
+    "close": "21:00"
+  },
+  "features": [
+    {
+      "id": "ledge-main",
+      "type": "ledge",
+      "count": 4,
+      "description": "Marble ledges, various heights"
+    },
+    {
+      "id": "rail-1",
+      "type": "rail",
+      "count": 2,
+      "description": "Flat bar and down rail"
+    },
+    {
+      "id": "bowl-1",
+      "type": "bowl",
+      "description": "Small bowl, approximately 5ft deep"
+    },
+    {
+      "id": "bank-1",
+      "type": "bank",
+      "count": 2,
+      "description": "Wallrides and bank-to-ledge"
+    },
+    {
+      "id": "stairs-1",
+      "type": "stairs",
+      "count": 1,
+      "description": "3-stair with handrail"
+    }
+  ],
+  "heroImage": "",
+  "updatedAt": "2026-02-11T00:00:00Z"
+}

@@ -1,0 +1,54 @@
+{
+  "slug": "riverside",
+  "name": "Riverside Skatepark",
+  "borough": "manhattan",
+  "location": {
+    "lat": 40.802,
+    "lng": -73.966
+  },
+  "address": "108th St & Riverside Dr, New York, NY 10025",
+  "nearestSubway": "110th St Cathedral Pkwy (1), 103rd St (1)",
+  "parkType": "full_park",
+  "surfaceType": "smooth_concrete",
+  "sunExposure": "partial_shade",
+  "drainage": "average",
+  "coveredPct": 0,
+  "isGated": false,
+  "hours": {
+    "open": "06:00",
+    "close": "22:00"
+  },
+  "features": [
+    {
+      "id": "bowl-1",
+      "type": "bowl",
+      "description": "Large flow bowl, 6-8ft deep with extensions"
+    },
+    {
+      "id": "ledge-1",
+      "type": "ledge",
+      "count": 3,
+      "description": "Concrete ledges with metal coping"
+    },
+    {
+      "id": "rail-1",
+      "type": "flat_bar",
+      "count": 2,
+      "description": "Low and medium flat bars"
+    },
+    {
+      "id": "bank-1",
+      "type": "bank",
+      "count": 2,
+      "description": "Banked walls"
+    },
+    {
+      "id": "qp-1",
+      "type": "quarter_pipe",
+      "count": 2,
+      "description": "Quarter pipes at edges"
+    }
+  ],
+  "heroImage": "",
+  "updatedAt": "2026-02-11T00:00:00Z"
+}

@@ -1,0 +1,49 @@
+{
+  "slug": "hunts-point",
+  "name": "Hunts Point Skatepark",
+  "borough": "bronx",
+  "location": {
+    "lat": 40.8095,
+    "lng": -73.887
+  },
+  "address": "Hunts Point Riverside Park, Bronx, NY 10474",
+  "nearestSubway": "Hunts Point Ave (6)",
+  "parkType": "street_plaza",
+  "surfaceType": "smooth_concrete",
+  "sunExposure": "full_sun",
+  "drainage": "average",
+  "coveredPct": 0,
+  "isGated": false,
+  "hours": {
+    "open": "06:00",
+    "close": "21:00"
+  },
+  "features": [
+    {
+      "id": "ledge-1",
+      "type": "ledge",
+      "count": 3,
+      "description": "Concrete ledges"
+    },
+    {
+      "id": "rail-1",
+      "type": "flat_bar",
+      "count": 1,
+      "description": "Flat bar"
+    },
+    {
+      "id": "bank-1",
+      "type": "bank",
+      "count": 1,
+      "description": "Small bank to ledge"
+    },
+    {
+      "id": "manual-1",
+      "type": "manual_pad",
+      "count": 1,
+      "description": "Manual pad"
+    }
+  ],
+  "heroImage": "",
+  "updatedAt": "2026-02-11T00:00:00Z"
+}

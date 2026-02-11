@@ -1,0 +1,59 @@
+{
+  "slug": "owls-head",
+  "name": "Owl's Head Skatepark",
+  "borough": "brooklyn",
+  "location": {
+    "lat": 40.638,
+    "lng": -74.0283
+  },
+  "address": "Shore Rd & Colonial Rd, Bay Ridge, Brooklyn, NY 11209",
+  "nearestSubway": "Bay Ridge Ave (R)",
+  "parkType": "full_park",
+  "surfaceType": "smooth_concrete",
+  "sunExposure": "full_sun",
+  "drainage": "average",
+  "coveredPct": 0,
+  "isGated": false,
+  "hours": {
+    "open": "06:00",
+    "close": "21:00"
+  },
+  "features": [
+    {
+      "id": "bowl-1",
+      "type": "bowl",
+      "description": "Large deep bowl, 8ft+"
+    },
+    {
+      "id": "bowl-2",
+      "type": "bowl",
+      "description": "Smaller flow bowl"
+    },
+    {
+      "id": "ledge-1",
+      "type": "ledge",
+      "count": 4,
+      "description": "Concrete and granite ledges"
+    },
+    {
+      "id": "rail-1",
+      "type": "rail",
+      "count": 2,
+      "description": "Flat rail and down rail"
+    },
+    {
+      "id": "bank-1",
+      "type": "bank",
+      "count": 2,
+      "description": "Banks and wallrides"
+    },
+    {
+      "id": "qp-1",
+      "type": "quarter_pipe",
+      "count": 2,
+      "description": "Quarter pipes"
+    }
+  ],
+  "heroImage": "",
+  "updatedAt": "2026-02-11T00:00:00Z"
+}

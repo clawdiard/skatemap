@@ -1,0 +1,54 @@
+{
+  "slug": "homage",
+  "name": "Homage Brooklyn",
+  "borough": "brooklyn",
+  "location": {
+    "lat": 40.6785,
+    "lng": -73.998
+  },
+  "address": "195 Columbia St, Brooklyn, NY 11231",
+  "nearestSubway": "Carroll St (F/G)",
+  "parkType": "full_park",
+  "surfaceType": "smooth_concrete",
+  "sunExposure": "full_shade",
+  "drainage": "excellent",
+  "coveredPct": 100,
+  "isGated": true,
+  "hours": {
+    "open": "12:00",
+    "close": "22:00"
+  },
+  "features": [
+    {
+      "id": "bowl-1",
+      "type": "bowl",
+      "description": "Indoor flow bowl"
+    },
+    {
+      "id": "mini-1",
+      "type": "mini_ramp",
+      "count": 1,
+      "description": "Mini ramp, 4ft"
+    },
+    {
+      "id": "ledge-1",
+      "type": "ledge",
+      "count": 3,
+      "description": "Various ledges"
+    },
+    {
+      "id": "rail-1",
+      "type": "rail",
+      "count": 2,
+      "description": "Rails and flat bars"
+    },
+    {
+      "id": "qp-1",
+      "type": "quarter_pipe",
+      "count": 2,
+      "description": "Quarter pipes"
+    }
+  ],
+  "heroImage": "",
+  "updatedAt": "2026-02-11T00:00:00Z"
+}

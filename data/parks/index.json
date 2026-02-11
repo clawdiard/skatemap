@@ -1,0 +1,240 @@
+[
+  {
+    "slug": "les-coleman",
+    "name": "LES Coleman Skatepark",
+    "borough": "manhattan",
+    "location": {
+      "lat": 40.7205,
+      "lng": -73.9836
+    },
+    "parkType": "full_park",
+    "status": null,
+    "crowd": null,
+    "lastReportAt": null,
+    "dryEstimate": null
+  },
+  {
+    "slug": "chelsea-piers",
+    "name": "Chelsea Piers Skatepark",
+    "borough": "manhattan",
+    "location": {
+      "lat": 40.7467,
+      "lng": -74.0083
+    },
+    "parkType": "street_plaza",
+    "status": null,
+    "crowd": null,
+    "lastReportAt": null,
+    "dryEstimate": null
+  },
+  {
+    "slug": "riverside",
+    "name": "Riverside Skatepark",
+    "borough": "manhattan",
+    "location": {
+      "lat": 40.802,
+      "lng": -73.966
+    },
+    "parkType": "full_park",
+    "status": null,
+    "crowd": null,
+    "lastReportAt": null,
+    "dryEstimate": null
+  },
+  {
+    "slug": "frederick-douglass",
+    "name": "Frederick Douglass Playground Skatepark",
+    "borough": "manhattan",
+    "location": {
+      "lat": 40.797,
+      "lng": -73.962
+    },
+    "parkType": "street_plaza",
+    "status": null,
+    "crowd": null,
+    "lastReportAt": null,
+    "dryEstimate": null
+  },
+  {
+    "slug": "owls-head",
+    "name": "Owl's Head Skatepark",
+    "borough": "brooklyn",
+    "location": {
+      "lat": 40.638,
+      "lng": -74.0283
+    },
+    "parkType": "full_park",
+    "status": null,
+    "crowd": null,
+    "lastReportAt": null,
+    "dryEstimate": null
+  },
+  {
+    "slug": "mccarren",
+    "name": "McCarren Skatepark",
+    "borough": "brooklyn",
+    "location": {
+      "lat": 40.72,
+      "lng": -73.951
+    },
+    "parkType": "full_park",
+    "status": null,
+    "crowd": null,
+    "lastReportAt": null,
+    "dryEstimate": null
+  },
+  {
+    "slug": "bed-stuy",
+    "name": "Bed-Stuy Skatepark",
+    "borough": "brooklyn",
+    "location": {
+      "lat": 40.687,
+      "lng": -73.944
+    },
+    "parkType": "street_plaza",
+    "status": null,
+    "crowd": null,
+    "lastReportAt": null,
+    "dryEstimate": null
+  },
+  {
+    "slug": "pier-62-bbp",
+    "name": "Pier 62 Skatepark at Brooklyn Bridge Park",
+    "borough": "brooklyn",
+    "location": {
+      "lat": 40.6932,
+      "lng": -73.9978
+    },
+    "parkType": "street_plaza",
+    "status": null,
+    "crowd": null,
+    "lastReportAt": null,
+    "dryEstimate": null
+  },
+  {
+    "slug": "prospect-park",
+    "name": "Prospect Park Flatground",
+    "borough": "brooklyn",
+    "location": {
+      "lat": 40.6602,
+      "lng": -73.969
+    },
+    "parkType": "street_plaza",
+    "status": null,
+    "crowd": null,
+    "lastReportAt": null,
+    "dryEstimate": null
+  },
+  {
+    "slug": "homage",
+    "name": "Homage Brooklyn",
+    "borough": "brooklyn",
+    "location": {
+      "lat": 40.6785,
+      "lng": -73.998
+    },
+    "parkType": "full_park",
+    "status": null,
+    "crowd": null,
+    "lastReportAt": null,
+    "dryEstimate": null
+  },
+  {
+    "slug": "rockaway",
+    "name": "Rockaway Skatepark",
+    "borough": "queens",
+    "location": {
+      "lat": 40.585,
+      "lng": -73.814
+    },
+    "parkType": "full_park",
+    "status": null,
+    "crowd": null,
+    "lastReportAt": null,
+    "dryEstimate": null
+  },
+  {
+    "slug": "maloof",
+    "name": "Maloof Skatepark",
+    "borough": "queens",
+    "location": {
+      "lat": 40.7467,
+      "lng": -73.8445
+    },
+    "parkType": "full_park",
+    "status": null,
+    "crowd": null,
+    "lastReportAt": null,
+    "dryEstimate": null
+  },
+  {
+    "slug": "astoria",
+    "name": "Astoria Skatepark",
+    "borough": "queens",
+    "location": {
+      "lat": 40.7729,
+      "lng": -73.923
+    },
+    "parkType": "street_plaza",
+    "status": null,
+    "crowd": null,
+    "lastReportAt": null,
+    "dryEstimate": null
+  },
+  {
+    "slug": "mullaly",
+    "name": "Mullaly Skatepark",
+    "borough": "bronx",
+    "location": {
+      "lat": 40.828,
+      "lng": -73.923
+    },
+    "parkType": "full_park",
+    "status": null,
+    "crowd": null,
+    "lastReportAt": null,
+    "dryEstimate": null
+  },
+  {
+    "slug": "hunts-point",
+    "name": "Hunts Point Skatepark",
+    "borough": "bronx",
+    "location": {
+      "lat": 40.8095,
+      "lng": -73.887
+    },
+    "parkType": "street_plaza",
+    "status": null,
+    "crowd": null,
+    "lastReportAt": null,
+    "dryEstimate": null
+  },
+  {
+    "slug": "stapleton",
+    "name": "Stapleton Skatepark",
+    "borough": "staten_island",
+    "location": {
+      "lat": 40.6265,
+      "lng": -74.0765
+    },
+    "parkType": "street_plaza",
+    "status": null,
+    "crowd": null,
+    "lastReportAt": null,
+    "dryEstimate": null
+  },
+  {
+    "slug": "owl-hollow",
+    "name": "Owl Hollow Skatepark",
+    "borough": "staten_island",
+    "location": {
+      "lat": 40.553,
+      "lng": -74.158
+    },
+    "parkType": "full_park",
+    "status": null,
+    "crowd": null,
+    "lastReportAt": null,
+    "dryEstimate": null
+  }
+]

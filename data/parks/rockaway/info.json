@@ -1,0 +1,54 @@
+{
+  "slug": "rockaway",
+  "name": "Rockaway Skatepark",
+  "borough": "queens",
+  "location": {
+    "lat": 40.585,
+    "lng": -73.814
+  },
+  "address": "Beach 91st St, Rockaway Beach, Queens, NY 11693",
+  "nearestSubway": "Beach 90th St (A/S)",
+  "parkType": "full_park",
+  "surfaceType": "smooth_concrete",
+  "sunExposure": "full_sun",
+  "drainage": "excellent",
+  "coveredPct": 0,
+  "isGated": false,
+  "hours": {
+    "open": "06:00",
+    "close": "21:00"
+  },
+  "features": [
+    {
+      "id": "bowl-1",
+      "type": "bowl",
+      "description": "Large kidney bowl, 6-9ft"
+    },
+    {
+      "id": "ledge-1",
+      "type": "ledge",
+      "count": 4,
+      "description": "Concrete ledges"
+    },
+    {
+      "id": "rail-1",
+      "type": "rail",
+      "count": 2,
+      "description": "Rails"
+    },
+    {
+      "id": "bank-1",
+      "type": "bank",
+      "count": 3,
+      "description": "Banks and transitions"
+    },
+    {
+      "id": "qp-1",
+      "type": "quarter_pipe",
+      "count": 2,
+      "description": "Quarter pipes with coping"
+    }
+  ],
+  "heroImage": "",
+  "updatedAt": "2026-02-11T00:00:00Z"
+}

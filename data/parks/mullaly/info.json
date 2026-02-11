@@ -1,0 +1,60 @@
+{
+  "slug": "mullaly",
+  "name": "Mullaly Skatepark",
+  "borough": "bronx",
+  "location": {
+    "lat": 40.828,
+    "lng": -73.923
+  },
+  "address": "E 164th St & River Ave, Bronx, NY 10452",
+  "nearestSubway": "161st St-Yankee Stadium (4/B/D)",
+  "parkType": "full_park",
+  "surfaceType": "smooth_concrete",
+  "sunExposure": "partial_shade",
+  "drainage": "excellent",
+  "coveredPct": 40,
+  "isGated": false,
+  "hours": {
+    "open": "06:00",
+    "close": "21:00"
+  },
+  "features": [
+    {
+      "id": "bowl-1",
+      "type": "bowl",
+      "description": "Large flow bowl, 5-8ft with extensions"
+    },
+    {
+      "id": "mini-1",
+      "type": "mini_ramp",
+      "count": 1,
+      "description": "Mini ramp under overpass"
+    },
+    {
+      "id": "ledge-1",
+      "type": "ledge",
+      "count": 4,
+      "description": "Concrete and granite ledges"
+    },
+    {
+      "id": "rail-1",
+      "type": "rail",
+      "count": 3,
+      "description": "Flat bars and handrails"
+    },
+    {
+      "id": "stairs-1",
+      "type": "stairs",
+      "count": 2,
+      "description": "3 and 5 stair sets"
+    },
+    {
+      "id": "qp-1",
+      "type": "quarter_pipe",
+      "count": 2,
+      "description": "Quarter pipes"
+    }
+  ],
+  "heroImage": "",
+  "updatedAt": "2026-02-11T00:00:00Z"
+}
