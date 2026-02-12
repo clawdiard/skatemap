@@ -15,6 +15,8 @@ const ParkDetailPage = lazy(() => import('./pages/ParkDetailPage'));
 const FavoritesPage = lazy(() => import('./pages/FavoritesPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
+const Leaderboard = lazy(() => import('./pages/Leaderboard'));
+const ReporterProfile = lazy(() => import('./pages/ReporterProfile'));
 
 function Loading() {
   return (
@@ -48,6 +50,8 @@ export default function App() {
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/reporter/:nickname" element={<ReporterProfile />} />
           </Routes>
         </Suspense>
         <TabBar />

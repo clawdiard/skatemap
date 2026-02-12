@@ -125,8 +125,8 @@ function updateParkIndex(slug, cond) {
   writeJSON(indexPath, index);
 }
 
-// ── Update Anonymous User Stats ──
-function updateUserStats(nickname) {
+// ── Update Anonymous User Stats (full reputation system) ──
+function updateUserStats(nickname, report) {
   const statsPath = path.join(DATA, 'users', 'stats.json');
   const stats = readJSON(statsPath) || { updatedAt: null, reporters: [] };
 
@@ -138,6 +138,9 @@ function updateUserStats(nickname) {
         reportCount: 0,
         reputation: 0,
         level: 'rookie',
+        accuracy: null,
+        parks: [],
+        streak: 0,
         joinedAt: now.toISOString(),
         lastReportAt: null,
         source: 'anonymous',
@@ -145,9 +148,46 @@ function updateUserStats(nickname) {
       stats.reporters.push(reporter);
     }
     reporter.reportCount += 1;
-    reporter.lastReportAt = now.toISOString();
-    reporter.reputation = (reporter.reputation || 0) + 5; // lower rep gain for anon
+
+    // +10 base points per report
+    let points = 10;
+
+    // +20 bonus: first report at park after rain (check weather data)
+    const weatherPath = path.join(DATA, 'weather', 'current.json');
+    const weather = readJSON(weatherPath);
+    if (weather && weather.recentRain) {
+      const condPath = path.join(DATA, 'parks', report.park, 'conditions.json');
+      const cond = readJSON(condPath);
+      const sixHours = 6 * 60 * 60 * 1000;
+      const hasRecent = (cond?.reports || []).some(
+        r => r.nickname !== nickname && now.getTime() - new Date(r.createdAt).getTime() < sixHours,
+      );
+      if (!hasRecent) points += 20;
+    }
+
+    reporter.reputation = (reporter.reputation || 0) + points;
     reporter.level = getLevel(reporter.reputation);
+    reporter.lastReportAt = now.toISOString();
+
+    // Track parks
+    if (!reporter.parks) reporter.parks = [];
+    if (report.park && !reporter.parks.includes(report.park)) {
+      reporter.parks.push(report.park);
+    }
+
+    // Simple streak: consecutive days
+    if (reporter.lastReportAt) {
+      const lastDay = new Date(reporter.lastReportAt).toDateString();
+      const today = now.toDateString();
+      const yesterday = new Date(now.getTime() - 86400000).toDateString();
+      if (lastDay === yesterday) {
+        reporter.streak = (reporter.streak || 0) + 1;
+      } else if (lastDay !== today) {
+        reporter.streak = 1;
+      }
+    } else {
+      reporter.streak = 1;
+    }
   }
 
   stats.updatedAt = now.toISOString();
@@ -196,7 +236,7 @@ function main() {
     notes: report.notes || '',
   };
 
-  const stats = updateUserStats(report.nickname);
+  const stats = updateUserStats(report.nickname, report);
   const cond = updateConditions(report.park, reportObj, stats);
   updateParkIndex(report.park, cond);
   updateMeta();

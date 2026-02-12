@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { submitReport, isRateLimited } from '../services/submitReport';
+import { getSavedNickname, saveNickname } from '../services/reputation';
 import type { ParkInfo } from '../types/park';
 
 interface ReportFormProps {
@@ -37,7 +38,7 @@ export default function ReportForm({ park, onClose, onSubmitted }: ReportFormPro
   const [hazardFeatures, setHazardFeatures] = useState<Set<string>>(new Set());
   const [hazardNotes, setHazardNotes] = useState<Record<string, string>>({});
   const [notes, setNotes] = useState('');
-  const [nickname, setNickname] = useState('');
+  const [nickname, setNickname] = useState(getSavedNickname);
   const [honeypot, setHoneypot] = useState(''); // anti-spam hidden field
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -72,12 +73,14 @@ export default function ReportForm({ park, onClose, onSubmitted }: ReportFormPro
     setError(null);
 
     try {
+      const nick = nickname.trim() || 'anonymous';
+      if (nick !== 'anonymous') saveNickname(nick);
       await submitReport({
         park: park.slug,
         status,
         surface,
         crowd,
-        nickname: nickname.trim() || 'anonymous',
+        nickname: nick,
         notes: notes.trim(),
         timestamp: new Date().toISOString(),
         ua: navigator.userAgent,
