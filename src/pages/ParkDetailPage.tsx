@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import type { ParkInfo, ParkConditions } from '../types/park';
 import { isFavorite, toggleFavorite } from '../utils/favorites';
 import { timeAgo, featureIcons, statusBadge, boroughColors } from '../utils/park';
+import ReportForm, { type SubmittedReport } from '../components/ReportForm';
 
 const BASE = import.meta.env.BASE_URL;
 
@@ -18,6 +19,7 @@ export default function ParkDetailPage() {
   const [notFound, setNotFound] = useState(false);
   const [fav, setFav] = useState(false);
   const [lightbox, setLightbox] = useState<string | null>(null);
+  const [showReport, setShowReport] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
@@ -49,6 +51,31 @@ export default function ParkDetailPage() {
     if (!slug) return;
     const newState = toggleFavorite(slug);
     setFav(newState);
+  };
+
+  const handleReportSubmitted = (report: SubmittedReport) => {
+    // Optimistic UI: add report to local state
+    if (conditions) {
+      setConditions({
+        ...conditions,
+        compositeStatus: report.status,
+        reportCount: conditions.reportCount + 1,
+        lastReportAt: report.timestamp,
+        avgSurface: report.surface ?? conditions.avgSurface,
+        avgCrowd: report.crowd ?? conditions.avgCrowd,
+        reports: [
+          {
+            reporter: report.reporter,
+            reportedAt: report.timestamp,
+            status: report.status,
+            surface: report.surface ?? undefined,
+            crowd: report.crowd ?? undefined,
+            notes: report.notes || undefined,
+          },
+          ...conditions.reports,
+        ],
+      });
+    }
   };
 
   if (notFound) {
@@ -224,7 +251,10 @@ export default function ParkDetailPage() {
 
       {/* Sticky Bottom Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-gray-950/95 backdrop-blur border-t border-gray-800 px-4 py-3 flex gap-3">
-        <button className="flex-1 bg-green-600 hover:bg-green-500 text-white font-semibold py-3 rounded-lg text-sm transition">
+        <button
+          onClick={() => setShowReport(true)}
+          className="flex-1 bg-green-600 hover:bg-green-500 text-white font-semibold py-3 rounded-lg text-sm transition"
+        >
           📝 Report Conditions
         </button>
         <a
@@ -243,6 +273,15 @@ export default function ParkDetailPage() {
           {fav ? '⭐' : '☆'}
         </button>
       </div>
+
+      {/* Report Form Modal */}
+      {showReport && info && (
+        <ReportForm
+          park={info}
+          onClose={() => setShowReport(false)}
+          onSubmitted={handleReportSubmitted}
+        />
+      )}
 
       {/* Lightbox */}
       {lightbox && (

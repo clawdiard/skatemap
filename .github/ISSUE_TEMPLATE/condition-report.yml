@@ -1,0 +1,70 @@
+name: "🛹 Condition Report"
+description: "Report current skatepark conditions"
+labels: ["condition-report"]
+body:
+  - type: dropdown
+    id: park
+    attributes:
+      label: Park
+      options:
+        - LES Coleman Skatepark
+        - Owl's Head Skatepark
+        - Chelsea Piers Skatepark
+        - McCarren Skatepark
+        - Rockaway Skatepark
+        - Maloof Skatepark
+        - Astoria Skatepark
+        - Mullaly Skatepark
+        - Hunts Point Skatepark
+        - Riverside Skatepark
+        - Bed-Stuy Skatepark
+        - Pier 62 Skatepark
+        - Frederick Douglass Skatepark
+        - Prospect Park Flatground
+        - Homage Brooklyn
+        - Stapleton Skatepark
+        - Owl Hollow Skatepark
+    validations:
+      required: true
+  - type: dropdown
+    id: status
+    attributes:
+      label: Conditions
+      options:
+        - "✅ Dry"
+        - "🟡 Partially Wet"
+        - "❌ Wet"
+        - "🚫 Closed"
+    validations:
+      required: true
+  - type: dropdown
+    id: crowd
+    attributes:
+      label: Crowd Level (1-5)
+      options:
+        - "1 - Empty"
+        - "2 - Light"
+        - "3 - Moderate"
+        - "4 - Packed"
+        - "5 - Sardines"
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Surface Quality (1-5)
+      options:
+        - "1 - Debris everywhere"
+        - "2 - Needs sweeping"
+        - "3 - Average"
+        - "4 - Clean"
+        - "5 - Freshly swept"
+  - type: textarea
+    id: hazards
+    attributes:
+      label: Hazards / Notes
+  - type: textarea
+    id: photos
+    attributes:
+      label: Photos
+      description: "Drag and drop photos here"
