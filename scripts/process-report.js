@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { notifyParkSubscribers } = require('./notify');
 
 // ── Environment ──
 const {
@@ -314,6 +315,46 @@ async function main() {
 
   // Update meta
   updateMeta();
+
+  // Send push notifications
+  const parkIndex = readJSON(path.join(DATA, 'parks', 'index.json')) || [];
+  const parkEntry = parkIndex.find(p => p.slug === report.slug);
+  const parkName = parkEntry?.name || report.slug;
+  const parkUrl = `/park/${report.slug}`;
+
+  // Park reported dry after being wet/unknown
+  const prevCond = readJSON(path.join(DATA, 'parks', report.slug, 'conditions.json.prev')) || {};
+  if (cond.compositeStatus === 'dry' && prevCond.compositeStatus && prevCond.compositeStatus !== 'dry') {
+    await notifyParkSubscribers({
+      type: 'dried',
+      parkSlug: report.slug,
+      title: `✅ ${parkName} is dry!`,
+      message: `Reported dry by @${ISSUE_AUTHOR}. Surface: ${cond.avgSurface}/5, Crowd: ${cond.avgCrowd}/5`,
+      url: parkUrl,
+    });
+  }
+
+  // Hazard reported
+  if (report.hazards.length > 0) {
+    await notifyParkSubscribers({
+      type: 'hazards',
+      parkSlug: report.slug,
+      title: `⚠️ Hazard at ${parkName}`,
+      message: report.hazards.join(', '),
+      url: parkUrl,
+    });
+  }
+
+  // Park reopened (was closed, now not)
+  if (prevCond.compositeStatus === 'closed' && cond.compositeStatus !== 'closed') {
+    await notifyParkSubscribers({
+      type: 'reopened',
+      parkSlug: report.slug,
+      title: `🟢 ${parkName} is open again!`,
+      message: `Status: ${cond.compositeStatus}`,
+      url: parkUrl,
+    });
+  }
 
   console.log(`✅ Processed report for ${report.slug} — status: ${cond.compositeStatus}, surface: ${cond.avgSurface}, crowd: ${cond.avgCrowd}`);
 }

@@ -1,5 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import ParkDetailPage from './pages/ParkDetailPage';
+import SettingsPage from './pages/SettingsPage';
+import { initOneSignal, incrementVisitCount } from './utils/notifications';
 
 const BASE = import.meta.env.BASE_URL;
 
@@ -23,17 +26,29 @@ function HomePage() {
             📊 Crowds
           </span>
         </div>
+        <Link
+          to="/settings"
+          className="mt-6 text-sm text-gray-500 hover:text-gray-300 transition-colors"
+        >
+          ⚙️ Settings
+        </Link>
       </div>
     </div>
   );
 }
 
 export default function App() {
+  useEffect(() => {
+    incrementVisitCount();
+    initOneSignal();
+  }, []);
+
   return (
     <BrowserRouter basename={BASE}>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/park/:slug" element={<ParkDetailPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Routes>
     </BrowserRouter>
   );

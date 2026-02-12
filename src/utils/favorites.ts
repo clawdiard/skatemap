@@ -1,3 +1,5 @@
+import { syncFavoriteTag } from './notifications';
+
 const STORAGE_KEY = 'parkcheck_favorites';
 
 export function getFavorites(): string[] {
@@ -18,10 +20,12 @@ export function toggleFavorite(slug: string): boolean {
   if (idx >= 0) {
     favs.splice(idx, 1);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(favs));
+    syncFavoriteTag(slug, false);
     return false;
   } else {
     favs.push(slug);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(favs));
+    syncFavoriteTag(slug, true);
     return true;
   }
 }

@@ -18,6 +18,8 @@ jobs:
         run: node scripts/update-weather.js
         env:
           OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
+          ONESIGNAL_APP_ID: ${{ secrets.ONESIGNAL_APP_ID }}
+          ONESIGNAL_REST_API_KEY: ${{ secrets.ONESIGNAL_REST_API_KEY }}
       - name: Commit changes
         run: |
           git config user.name "parkcheck-bot"

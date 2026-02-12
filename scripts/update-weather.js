@@ -222,6 +222,19 @@ function handleRainReset(weather, parks) {
 
 // ── Main ─────────────────────────────────────────────────────────────
 
+async function sendNotification({ title, message, url, filters }) {
+  const appId = process.env.ONESIGNAL_APP_ID;
+  const apiKey = process.env.ONESIGNAL_REST_API_KEY;
+  if (!appId || !apiKey) return;
+  try {
+    await fetch('https://onesignal.com/api/v1/notifications', {
+      method: 'POST',
+      headers: { 'Authorization': `Basic ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ app_id: appId, headings: { en: title }, contents: { en: message }, ...(url && { url }), ...(filters && { filters }), enable_frequency_cap: true }),
+    });
+  } catch (e) { console.warn('Notification failed:', e.message); }
+}
+
 async function main() {
   console.log('Fetching NYC weather...');
   const raw = await fetchWeather();
@@ -234,6 +247,10 @@ async function main() {
   console.log(`Computing dry-out estimates for ${parks.length} parks...`);
 
   handleRainReset(weather, parks);
+
+  // Load previous estimates for comparison
+  const prevEstPath = join(WEATHER_DIR, 'dry-estimates.json');
+  const prevEstimates = existsSync(prevEstPath) ? JSON.parse(readFileSync(prevEstPath, 'utf8')).estimates || {} : {};
 
   const estimates = {};
   for (const park of parks) {
@@ -248,6 +265,42 @@ async function main() {
 
   writeJSON(join(WEATHER_DIR, 'dry-estimates.json'), dryEstimates);
   console.log('Dry-out estimates written.');
+
+  // Push notifications
+  // Rain incoming
+  const rainSoon = (weather.hourly || []).slice(0, 2).some(h => (h.pop || 0) > 0.6);
+  const prevWeatherPath = join(WEATHER_DIR, 'prev-alert-state.json');
+  const alertState = existsSync(prevWeatherPath) ? JSON.parse(readFileSync(prevWeatherPath, 'utf8')) : {};
+  if (rainSoon && !alertState.rainAlerted) {
+    await sendNotification({
+      title: '🌧️ Rain incoming in NYC',
+      message: 'Rain expected within 2 hours. Get your session in!',
+      filters: [{ field: 'tag', key: 'notify_rain', value: 'true' }],
+    });
+    alertState.rainAlerted = true;
+  } else if (!rainSoon) {
+    alertState.rainAlerted = false;
+  }
+
+  // Park dried out notifications
+  for (const [slug, est] of Object.entries(estimates)) {
+    if (est.isDry && prevEstimates[slug] && !prevEstimates[slug].isDry) {
+      const park = parks.find(p => p.slug === slug);
+      const name = park?.name || slug;
+      await sendNotification({
+        title: `☀️ ${name} should be dry now`,
+        message: 'Dry-out estimate reached. Go check it out!',
+        url: `/park/${slug}`,
+        filters: [
+          { field: 'tag', key: `fav_${slug}`, value: 'true' },
+          { operator: 'AND' },
+          { field: 'tag', key: 'notify_dried', value: 'true' },
+        ],
+      });
+    }
+  }
+
+  writeFileSync(prevWeatherPath, JSON.stringify(alertState));
 
   // Summary
   const dryCount = Object.values(estimates).filter(e => e.isDry).length;
