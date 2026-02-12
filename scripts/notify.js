@@ -1,72 +1,64 @@
 /**
- * OneSignal notification helper for GitHub Actions.
- * Requires ONESIGNAL_APP_ID and ONESIGNAL_REST_API_KEY env vars.
+ * Notification helper for GitHub Actions.
+ * Writes to data/notifications.json (local notification feed).
+ * No external push service required.
+ *
+ * Supports both CJS (require) and ESM (import) via dual export.
  */
 
-async function sendNotification({ title, message, url, filters }) {
-  const appId = process.env.ONESIGNAL_APP_ID;
-  const apiKey = process.env.ONESIGNAL_REST_API_KEY;
+import { readFileSync, writeFileSync, mkdirSync } from 'fs';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-  if (!appId || !apiKey) {
-    console.log('OneSignal not configured, skipping notification:', title);
-    return null;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const NOTIF_FILE = resolve(__dirname, '..', 'data', 'notifications.json');
+const MAX_NOTIFICATIONS = 50;
+
+function readNotifications() {
+  try {
+    return JSON.parse(readFileSync(NOTIF_FILE, 'utf8'));
+  } catch {
+    return [];
   }
+}
 
-  const body = {
-    app_id: appId,
-    headings: { en: title },
-    contents: { en: message },
-    ...(url && { url }),
-    ...(filters && { filters }),
-    enable_frequency_cap: true,
+function writeNotifications(arr) {
+  mkdirSync(dirname(NOTIF_FILE), { recursive: true });
+  writeFileSync(NOTIF_FILE, JSON.stringify(arr, null, 2) + '\n');
+}
+
+/**
+ * Append a notification to the feed.
+ * Newest first, capped at MAX_NOTIFICATIONS.
+ */
+export function appendNotification({ type, park, title, message }) {
+  const all = readNotifications();
+  const id = `notif-${Date.now()}-${park || 'broadcast'}-${type}`;
+  const entry = {
+    id,
+    type,
+    park: park || '',
+    title,
+    message,
+    timestamp: new Date().toISOString(),
   };
-
-  const res = await fetch('https://onesignal.com/api/v1/notifications', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Basic ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
-
-  const data = await res.json();
-  if (!res.ok) {
-    console.error('OneSignal error:', data);
-    return null;
-  }
-  console.log(`Notification sent: "${title}" → ${data.recipients || 0} recipients`);
-  return data;
+  all.unshift(entry);
+  writeNotifications(all.slice(0, MAX_NOTIFICATIONS));
+  console.log(`Notification appended: "${title}"`);
+  return entry;
 }
 
 /**
- * Send a park-specific notification to users who favorited that park.
+ * Send a park-specific notification.
  */
-async function notifyParkSubscribers({ type, parkSlug, title, message, url }) {
-  return sendNotification({
-    title,
-    message,
-    url,
-    filters: [
-      { field: 'tag', key: `fav_${parkSlug}`, value: 'true' },
-      { operator: 'AND' },
-      { field: 'tag', key: `notify_${type}`, value: 'true' },
-    ],
-  });
+export async function notifyParkSubscribers({ type, parkSlug, title, message }) {
+  return appendNotification({ type, park: parkSlug, title, message });
 }
 
 /**
- * Send a broadcast notification filtered by preference tag.
+ * Send a broadcast notification by preference type.
  */
-async function notifyByPreference({ type, title, message, url }) {
-  return sendNotification({
-    title,
-    message,
-    url,
-    filters: [
-      { field: 'tag', key: `notify_${type}`, value: 'true' },
-    ],
-  });
+export async function notifyByPreference({ type, title, message }) {
+  return appendNotification({ type, park: '', title, message });
 }
-
-module.exports = { sendNotification, notifyParkSubscribers, notifyByPreference };

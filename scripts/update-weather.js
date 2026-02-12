@@ -8,6 +8,7 @@
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'fs';
 import { join } from 'path';
+import { notifyByPreference, notifyParkSubscribers } from './notify.js';
 
 const API_KEY = process.env.OPENWEATHERMAP_API_KEY;
 const NYC_LAT = 40.7128;
@@ -222,18 +223,7 @@ function handleRainReset(weather, parks) {
 
 // ── Main ─────────────────────────────────────────────────────────────
 
-async function sendNotification({ title, message, url, filters }) {
-  const appId = process.env.ONESIGNAL_APP_ID;
-  const apiKey = process.env.ONESIGNAL_REST_API_KEY;
-  if (!appId || !apiKey) return;
-  try {
-    await fetch('https://onesignal.com/api/v1/notifications', {
-      method: 'POST',
-      headers: { 'Authorization': `Basic ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ app_id: appId, headings: { en: title }, contents: { en: message }, ...(url && { url }), ...(filters && { filters }), enable_frequency_cap: true }),
-    });
-  } catch (e) { console.warn('Notification failed:', e.message); }
-}
+// Notifications are now written to data/notifications.json via notify.js
 
 async function main() {
   console.log('Fetching NYC weather...');
@@ -272,10 +262,10 @@ async function main() {
   const prevWeatherPath = join(WEATHER_DIR, 'prev-alert-state.json');
   const alertState = existsSync(prevWeatherPath) ? JSON.parse(readFileSync(prevWeatherPath, 'utf8')) : {};
   if (rainSoon && !alertState.rainAlerted) {
-    await sendNotification({
+    await notifyByPreference({
+      type: 'rain',
       title: '🌧️ Rain incoming in NYC',
       message: 'Rain expected within 2 hours. Get your session in!',
-      filters: [{ field: 'tag', key: 'notify_rain', value: 'true' }],
     });
     alertState.rainAlerted = true;
   } else if (!rainSoon) {
@@ -287,15 +277,11 @@ async function main() {
     if (est.isDry && prevEstimates[slug] && !prevEstimates[slug].isDry) {
       const park = parks.find(p => p.slug === slug);
       const name = park?.name || slug;
-      await sendNotification({
+      await notifyParkSubscribers({
+        type: 'dried',
+        parkSlug: slug,
         title: `☀️ ${name} should be dry now`,
         message: 'Dry-out estimate reached. Go check it out!',
-        url: `/park/${slug}`,
-        filters: [
-          { field: 'tag', key: `fav_${slug}`, value: 'true' },
-          { operator: 'AND' },
-          { field: 'tag', key: 'notify_dried', value: 'true' },
-        ],
       });
     }
   }

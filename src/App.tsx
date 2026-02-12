@@ -1,7 +1,7 @@
 import { useEffect, useCallback, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import { initOneSignal, incrementVisitCount } from './utils/notifications';
+import { initNotifications, incrementVisitCount } from './utils/notifications';
 import { OfflineBanner } from './components/OfflineBanner';
 import { InstallPrompt } from './components/InstallPrompt';
 import { Header } from './components/Header';
@@ -27,7 +27,7 @@ function Loading() {
 export default function App() {
   useEffect(() => {
     incrementVisitCount();
-    initOneSignal();
+    initNotifications();
   }, []);
 
   const handleInvalidate = useCallback((changed: string[]) => {

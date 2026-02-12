@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { NotificationBell } from './NotificationBell';
 
 export function Header() {
   return (
@@ -10,6 +11,7 @@ export function Header() {
           </span>
         </Link>
         <div className="flex items-center gap-3 text-gray-400">
+          <NotificationBell />
           <span className="text-sm">🛹 NYC</span>
         </div>
       </div>

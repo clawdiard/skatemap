@@ -1,4 +1,7 @@
-import OneSignal from 'react-onesignal';
+/**
+ * Lightweight notification utilities — no external push services.
+ * Uses localStorage for prefs and the Notification API for local alerts.
+ */
 
 const PREFS_KEY = 'parkcheck_notification_prefs';
 const VISIT_KEY = 'parkcheck_visit_count';
@@ -25,26 +28,17 @@ const DEFAULT_PREFS: NotificationPrefs = {
   quietEnd: '08:00',
 };
 
-let initialized = false;
-
-export async function initOneSignal(): Promise<void> {
-  const appId = import.meta.env.VITE_ONESIGNAL_APP_ID;
-  if (!appId || initialized) return;
-
-  await OneSignal.init({
-    appId,
-    allowLocalhostAsSecureOrigin: import.meta.env.DEV,
-  });
-  initialized = true;
-
-  // Sync saved prefs as tags
-  const prefs = getNotificationPrefs();
-  syncPrefsToTags(prefs);
+export function initNotifications(): void {
+  // Register service worker for background sync + badge
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register(
+      `${import.meta.env.BASE_URL || '/'}sw.js`
+    ).catch(() => { /* silent */ });
+  }
 }
 
 export function getVisitCount(): number {
-  const count = parseInt(localStorage.getItem(VISIT_KEY) || '0', 10);
-  return count;
+  return parseInt(localStorage.getItem(VISIT_KEY) || '0', 10);
 }
 
 export function incrementVisitCount(): number {
@@ -58,12 +52,9 @@ export function shouldShowPrompt(): boolean {
 }
 
 export async function requestPermission(): Promise<boolean> {
-  try {
-    await OneSignal.Slidedown.promptPush();
-    return true;
-  } catch {
-    return false;
-  }
+  if (!('Notification' in window)) return false;
+  const result = await Notification.requestPermission();
+  return result === 'granted';
 }
 
 export function getNotificationPrefs(): NotificationPrefs {
@@ -76,29 +67,4 @@ export function getNotificationPrefs(): NotificationPrefs {
 
 export function saveNotificationPrefs(prefs: NotificationPrefs): void {
   localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
-  syncPrefsToTags(prefs);
-}
-
-function syncPrefsToTags(prefs: NotificationPrefs): void {
-  if (!initialized) return;
-  OneSignal.User.addTags({
-    notify_dried: String(prefs.notify_dried),
-    notify_rain: String(prefs.notify_rain),
-    notify_hazards: String(prefs.notify_hazards),
-    notify_reopened: String(prefs.notify_reopened),
-    notify_reports: String(prefs.notify_reports),
-    notify_crowds: String(prefs.notify_crowds),
-    quiet_start: prefs.quietStart,
-    quiet_end: prefs.quietEnd,
-  });
-}
-
-export function syncFavoriteTag(slug: string, isFavorite: boolean): void {
-  if (!initialized) return;
-  const key = `fav_${slug}`;
-  if (isFavorite) {
-    OneSignal.User.addTag(key, 'true');
-  } else {
-    OneSignal.User.removeTag(key);
-  }
 }

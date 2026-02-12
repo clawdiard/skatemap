@@ -1,6 +1,6 @@
-const fs = require('fs');
-const path = require('path');
-const { notifyParkSubscribers } = require('./notify');
+import fs from 'fs';
+import path from 'path';
+import { notifyParkSubscribers } from './notify.js';
 
 // ── Environment ──
 const {

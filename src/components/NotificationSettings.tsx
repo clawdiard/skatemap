@@ -8,7 +8,7 @@ import {
 } from '../utils/notifications';
 
 const TOGGLE_OPTIONS: { key: keyof NotificationPrefs; label: string; desc: string }[] = [
-  { key: 'notify_dried', label: 'Park Dried Out', desc: 'When a favorited park\'s dry-out estimate is reached or reported dry' },
+  { key: 'notify_dried', label: 'Park Dried Out', desc: "When a favorited park's dry-out estimate is reached or reported dry" },
   { key: 'notify_rain', label: 'Rain Incoming', desc: 'When rain is forecast within 2 hours' },
   { key: 'notify_hazards', label: 'Hazard Reported', desc: 'When a hazard is reported at a favorited park' },
   { key: 'notify_reopened', label: 'Park Reopened', desc: 'When a closed park is reported open' },
@@ -18,7 +18,9 @@ const TOGGLE_OPTIONS: { key: keyof NotificationPrefs; label: string; desc: strin
 
 export default function NotificationSettings() {
   const [prefs, setPrefs] = useState<NotificationPrefs>(getNotificationPrefs);
-  const [permGranted, setPermGranted] = useState(Notification?.permission === 'granted');
+  const [permGranted, setPermGranted] = useState(
+    typeof Notification !== 'undefined' ? Notification.permission === 'granted' : false
+  );
   const showPrompt = shouldShowPrompt();
 
   const update = (key: keyof NotificationPrefs, value: boolean | string) => {
@@ -50,45 +52,42 @@ export default function NotificationSettings() {
         </div>
       )}
 
-      {permGranted && (
-        <>
-          <div className="space-y-3 mb-6">
-            {TOGGLE_OPTIONS.map(({ key, label, desc }) => (
-              <label key={key} className="flex items-start gap-3 p-3 rounded-lg bg-gray-900/50 border border-gray-800 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={prefs[key] as boolean}
-                  onChange={(e) => update(key, e.target.checked)}
-                  className="mt-1 accent-green-500"
-                />
-                <div>
-                  <div className="text-sm font-medium text-gray-200">{label}</div>
-                  <div className="text-xs text-gray-500">{desc}</div>
-                </div>
-              </label>
-            ))}
-          </div>
-
-          <div className="p-3 rounded-lg bg-gray-900/50 border border-gray-800">
-            <h3 className="text-sm font-medium text-gray-300 mb-2">🌙 Quiet Hours</h3>
-            <div className="flex items-center gap-2 text-sm text-gray-400">
-              <input
-                type="time"
-                value={prefs.quietStart}
-                onChange={(e) => update('quietStart', e.target.value)}
-                className="bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-200"
-              />
-              <span>to</span>
-              <input
-                type="time"
-                value={prefs.quietEnd}
-                onChange={(e) => update('quietEnd', e.target.value)}
-                className="bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-200"
-              />
+      <div className="space-y-3 mb-6">
+        {TOGGLE_OPTIONS.map(({ key, label, desc }) => (
+          <label key={key} className="flex items-start gap-3 p-3 rounded-lg bg-gray-900/50 border border-gray-800 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={prefs[key] as boolean}
+              onChange={(e) => update(key, e.target.checked)}
+              className="mt-1 accent-green-500"
+            />
+            <div>
+              <div className="text-sm font-medium text-gray-200">{label}</div>
+              <div className="text-xs text-gray-500">{desc}</div>
             </div>
-          </div>
-        </>
-      )}
+          </label>
+        ))}
+      </div>
+
+      <div className="p-3 rounded-lg bg-gray-900/50 border border-gray-800">
+        <h3 className="text-sm font-medium text-gray-300 mb-2">🌙 Quiet Hours</h3>
+        <p className="text-xs text-gray-500 mb-2">Local notifications are suppressed during quiet hours.</p>
+        <div className="flex items-center gap-2 text-sm text-gray-400">
+          <input
+            type="time"
+            value={prefs.quietStart}
+            onChange={(e) => update('quietStart', e.target.value)}
+            className="bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-200"
+          />
+          <span>to</span>
+          <input
+            type="time"
+            value={prefs.quietEnd}
+            onChange={(e) => update('quietEnd', e.target.value)}
+            className="bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-200"
+          />
+        </div>
+      </div>
     </div>
   );
 }
