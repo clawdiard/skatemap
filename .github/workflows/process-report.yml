@@ -1,0 +1,38 @@
+name: Process Condition Report
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  process:
+    if: contains(github.event.issue.labels.*.name, 'condition-report')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Process Report
+        run: node scripts/process-report.js
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
+          ISSUE_AUTHOR_ID: ${{ github.event.issue.user.id }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_CREATED_AT: ${{ github.event.issue.created_at }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit changes
+        run: |
+          git config user.name "parkcheck-bot"
+          git config user.email "bot@parkcheck.app"
+          git add data/
+          git diff --cached --quiet || git commit -m "Update conditions from report #${{ github.event.issue.number }}"
+          git push
+      - name: Close issue
+        if: ${{ !env.REPORT_REJECTED }}
+        run: gh issue close ${{ github.event.issue.number }} --comment "✅ Report processed. Thanks for keeping NYC parks updated!"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
