@@ -4,6 +4,7 @@ import type { ParkInfo, ParkConditions } from '../types/park';
 import { isFavorite, toggleFavorite } from '../utils/favorites';
 import { timeAgo, featureIcons, statusBadge, boroughColors } from '../utils/park';
 import ReportForm, { type SubmittedReport } from '../components/ReportForm';
+import WeatherWidget from '../components/WeatherWidget';
 
 const BASE = import.meta.env.BASE_URL;
 
@@ -167,10 +168,8 @@ export default function ParkDetailPage() {
           )}
         </section>
 
-        {/* Weather Widget Placeholder */}
-        <section className="rounded-lg border border-gray-800 bg-gray-900/50 p-4">
-          <p className="text-sm text-gray-500">🌤️ Weather data coming soon</p>
-        </section>
+        {/* Weather Widget */}
+        <WeatherWidget parkSlug={info.slug} />
 
         {/* Features Grid */}
         {info.features.length > 0 && (
