@@ -1,4 +1,9 @@
-function App() {
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import ParkDetailPage from './pages/ParkDetailPage';
+
+const BASE = import.meta.env.BASE_URL;
+
+function HomePage() {
   return (
     <div className="dark min-h-screen bg-gray-950 text-gray-100">
       <div className="flex flex-col items-center justify-center min-h-screen px-4">
@@ -20,7 +25,16 @@ function App() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default function App() {
+  return (
+    <BrowserRouter basename={BASE}>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/park/:slug" element={<ParkDetailPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
