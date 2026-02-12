@@ -1,8 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import ParkDetailPage from './pages/ParkDetailPage';
 import SettingsPage from './pages/SettingsPage';
 import { initOneSignal, incrementVisitCount } from './utils/notifications';
+import { OfflineBanner } from './components/OfflineBanner';
+import { InstallPrompt } from './components/InstallPrompt';
+import { useDataPolling } from './hooks/useDataPolling';
 
 const BASE = import.meta.env.BASE_URL;
 
@@ -43,13 +46,22 @@ export default function App() {
     initOneSignal();
   }, []);
 
+  const handleInvalidate = useCallback((changed: string[]) => {
+    console.log('[ParkCheck] Data changed:', changed);
+    // Components will refetch on next render via their own data hooks
+  }, []);
+
+  useDataPolling(handleInvalidate);
+
   return (
     <BrowserRouter basename={BASE}>
+      <OfflineBanner />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/park/:slug" element={<ParkDetailPage />} />
         <Route path="/settings" element={<SettingsPage />} />
       </Routes>
+      <InstallPrompt />
     </BrowserRouter>
   );
 }

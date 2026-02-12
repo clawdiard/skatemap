@@ -1,0 +1,25 @@
+name: Clean Stale Reports
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Clean stale reports
+        run: node scripts/cleanup-stale.js
+      - name: Commit changes
+        run: |
+          git config user.name "parkcheck-bot"
+          git config user.email "bot@parkcheck.app"
+          git add data/
+          git diff --cached --quiet || git commit -m "Clean stale reports"
+          git push

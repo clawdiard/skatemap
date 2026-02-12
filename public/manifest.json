@@ -1,0 +1,16 @@
+{
+  "name": "ParkCheck — NYC Skatepark Conditions",
+  "short_name": "ParkCheck",
+  "description": "Real-time skatepark conditions for NYC",
+  "start_url": "/skatemap/",
+  "scope": "/skatemap/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#22c55e",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/skatemap/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/skatemap/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/skatemap/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
