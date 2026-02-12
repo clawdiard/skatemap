@@ -1,15 +1,200 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ParkCheck — NYC Skatepark Conditions</title>
-    <meta name="theme-color" content="#22c55e" />
-    <link rel="manifest" href="/skatemap/manifest.json" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NYC Skate Map — Every Skatepark in New York City</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1a2e;--surface:#16213e;--surface2:#0f3460;--accent:#e94560;--accent2:#ff6b6b;--text:#eee;--text2:#aaa;--border:#2a2a4a}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;overflow:hidden}
+#sidebar{width:380px;height:100vh;background:var(--surface);display:flex;flex-direction:column;z-index:1000;border-right:1px solid var(--border);flex-shrink:0;transition:transform .3s}
+#sidebar.hidden{transform:translateX(-100%);position:absolute}
+.sidebar-header{padding:20px;background:var(--bg);border-bottom:1px solid var(--border)}
+.sidebar-header h1{font-size:1.5rem;font-weight:800;letter-spacing:-.5px}
+.sidebar-header h1 span{color:var(--accent)}
+.sidebar-header p{color:var(--text2);font-size:.8rem;margin-top:4px}
+.controls{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
+.search-box{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:.9rem;outline:none}
+.search-box:focus{border-color:var(--accent)}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap}
+.filter-btn{padding:6px 12px;border:1px solid var(--border);border-radius:20px;background:transparent;color:var(--text2);font-size:.75rem;cursor:pointer;transition:all .2s}
+.filter-btn:hover,.filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.park-count{padding:8px 20px;font-size:.75rem;color:var(--text2);border-bottom:1px solid var(--border)}
+.park-list{flex:1;overflow-y:auto;padding:8px}
+.park-list::-webkit-scrollbar{width:6px}
+.park-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.park-card{padding:14px 16px;border-radius:10px;cursor:pointer;transition:all .2s;border:1px solid transparent;margin-bottom:4px}
+.park-card:hover{background:var(--bg);border-color:var(--border)}
+.park-card.active{background:var(--surface2);border-color:var(--accent)}
+.park-card h3{font-size:.95rem;font-weight:600;margin-bottom:4px}
+.park-card .borough-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.park-card .addr{font-size:.78rem;color:var(--text2);margin-bottom:6px}
+.park-card .features{display:flex;flex-wrap:wrap;gap:4px}
+.park-card .feat{padding:2px 7px;background:var(--bg);border-radius:4px;font-size:.68rem;color:var(--text2)}
+.borough-manhattan .borough-tag{background:#e945601a;color:#e94560}
+.borough-brooklyn .borough-tag{background:#00b4d81a;color:#00b4d8}
+.borough-queens .borough-tag{background:#48bfe31a;color:#48bfe3}
+.borough-bronx .borough-tag{background:#f9c74f1a;color:#f9c74f}
+.borough-staten-island .borough-tag{background:#90be6d1a;color:#90be6d}
+#map-container{flex:1;position:relative}
+#map{height:100%;width:100%}
+#toggle-sidebar{position:absolute;top:12px;left:12px;z-index:1001;width:40px;height:40px;border-radius:8px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-size:1.2rem;cursor:pointer;display:none;align-items:center;justify-content:center}
+.leaflet-popup-content-wrapper{background:var(--surface)!important;color:var(--text)!important;border-radius:12px!important;box-shadow:0 8px 32px rgba(0,0,0,.4)!important;border:1px solid var(--border)}
+.leaflet-popup-tip{background:var(--surface)!important}
+.leaflet-popup-content{margin:14px 16px!important;font-family:'Segoe UI',system-ui,sans-serif!important}
+.popup-title{font-size:1.05rem;font-weight:700;margin-bottom:6px}
+.popup-borough{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.popup-info{font-size:.82rem;color:var(--text2);line-height:1.5}
+.popup-info strong{color:var(--text)}
+.popup-features{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.popup-feat{padding:3px 8px;background:var(--bg);border-radius:4px;font-size:.72rem;color:var(--text2)}
+.popup-notes{margin-top:8px;font-size:.78rem;color:var(--text2);font-style:italic;border-top:1px solid var(--border);padding-top:8px}
+.popup-directions{display:inline-block;margin-top:10px;padding:6px 14px;background:var(--accent);color:#fff;border-radius:6px;font-size:.78rem;text-decoration:none;font-weight:600}
+.popup-directions:hover{background:var(--accent2)}
+.leaflet-control-zoom a{background:var(--surface)!important;color:var(--text)!important;border-color:var(--border)!important}
+.leaflet-control-attribution{background:rgba(26,26,46,.8)!important;color:var(--text2)!important}
+.leaflet-control-attribution a{color:var(--accent)!important}
+@media(max-width:768px){
+  #sidebar{width:100%;height:50vh;position:absolute;bottom:0;left:0;border-right:none;border-top:1px solid var(--border);transform:translateY(0);z-index:1001}
+  #sidebar.hidden{transform:translateY(100%)}
+  #map-container{height:100vh;width:100vw}
+  #toggle-sidebar{display:flex}
+  body{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<div id="sidebar">
+  <div class="sidebar-header">
+    <h1>🛹 NYC <span>Skate</span>Map</h1>
+    <p>Every skatepark across all 5 boroughs</p>
+  </div>
+  <div class="controls">
+    <input type="text" class="search-box" id="search" placeholder="Search parks...">
+    <div class="filter-row" id="filters">
+      <button class="filter-btn active" data-borough="all">All</button>
+      <button class="filter-btn" data-borough="Manhattan">Manhattan</button>
+      <button class="filter-btn" data-borough="Brooklyn">Brooklyn</button>
+      <button class="filter-btn" data-borough="Queens">Queens</button>
+      <button class="filter-btn" data-borough="Bronx">Bronx</button>
+      <button class="filter-btn" data-borough="Staten Island">Staten Island</button>
+    </div>
+  </div>
+  <div class="park-count" id="park-count"></div>
+  <div class="park-list" id="park-list"></div>
+</div>
+<div id="map-container">
+  <button id="toggle-sidebar" onclick="toggleSidebar()">☰</button>
+  <div id="map"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const boroughColors = {Manhattan:'#e94560',Brooklyn:'#00b4d8',Queens:'#48bfe3',Bronx:'#f9c74f','Staten Island':'#90be6d'};
+
+const map = L.map('map',{zoomControl:true}).setView([40.7128,-73.97],11.5);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+  attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+  maxZoom:19
+}).addTo(map);
+
+let parks=[], markers={}, activeBorough='all', activeCard=null;
+
+function createIcon(color){
+  return L.divIcon({
+    className:'custom-marker',
+    html:`<svg width="28" height="36" viewBox="0 0 28 36"><path d="M14 0C6.27 0 0 6.27 0 14c0 10.5 14 22 14 22s14-11.5 14-22C28 6.27 21.73 0 14 0z" fill="${color}"/><circle cx="14" cy="14" r="6" fill="rgba(0,0,0,.3)"/><circle cx="14" cy="14" r="4" fill="white"/></svg>`,
+    iconSize:[28,36],iconAnchor:[14,36],popupAnchor:[0,-36]
+  });
+}
+
+function popupHTML(p){
+  const feats = p.features.map(f=>`<span class="popup-feat">${f}</span>`).join('');
+  return `<div>
+    <div class="popup-title">${p.name}</div>
+    <div class="popup-borough" style="color:${boroughColors[p.borough]}">${p.borough}</div>
+    <div class="popup-info">
+      <strong>Address:</strong> ${p.address}<br>
+      <strong>Entry:</strong> ${p.free?'Free':'Paid'}<br>
+      <strong>Surface:</strong> ${p.surface}
+    </div>
+    <div class="popup-features">${feats}</div>
+    ${p.notes?`<div class="popup-notes">${p.notes}</div>`:''}
+    <a class="popup-directions" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}" target="_blank" rel="noopener">📍 Directions</a>
+  </div>`;
+}
+
+function renderList(filtered){
+  const list=document.getElementById('park-list');
+  const count=document.getElementById('park-count');
+  list.innerHTML='';
+  count.textContent=`Showing ${filtered.length} of ${parks.length} parks`;
+  filtered.forEach(p=>{
+    const cls=p.borough.toLowerCase().replace(' ','-');
+    const feats=p.features.slice(0,4).map(f=>`<span class="feat">${f}</span>`).join('');
+    const card=document.createElement('div');
+    card.className=`park-card borough-${cls}`;
+    card.innerHTML=`<span class="borough-tag">${p.borough}</span><h3>${p.name}</h3><div class="addr">${p.address}</div><div class="features">${feats}</div>`;
+    card.onclick=()=>{
+      if(activeCard)activeCard.classList.remove('active');
+      card.classList.add('active');
+      activeCard=card;
+      map.flyTo([p.lat,p.lng],15,{duration:0.8});
+      markers[p.id].openPopup();
+    };
+    list.appendChild(card);
+  });
+}
+
+function filterParks(){
+  const q=document.getElementById('search').value.toLowerCase();
+  return parks.filter(p=>{
+    const matchBorough = activeBorough==='all'||p.borough===activeBorough;
+    const matchSearch = !q||p.name.toLowerCase().includes(q)||p.address.toLowerCase().includes(q)||p.features.some(f=>f.toLowerCase().includes(q));
+    return matchBorough&&matchSearch;
+  });
+}
+
+function updateMarkers(filtered){
+  const ids=new Set(filtered.map(p=>p.id));
+  Object.entries(markers).forEach(([id,m])=>{
+    ids.has(+id)?m.addTo(map):m.remove();
+  });
+}
+
+function applyFilters(){
+  const f=filterParks();
+  renderList(f);
+  updateMarkers(f);
+}
+
+document.getElementById('filters').addEventListener('click',e=>{
+  if(!e.target.classList.contains('filter-btn'))return;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  e.target.classList.add('active');
+  activeBorough=e.target.dataset.borough;
+  applyFilters();
+});
+
+document.getElementById('search').addEventListener('input',applyFilters);
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('hidden');
+  setTimeout(()=>map.invalidateSize(),350);
+}
+
+fetch('data/parks.json').then(r=>r.json()).then(data=>{
+  parks=data;
+  parks.forEach(p=>{
+    const color=boroughColors[p.borough]||'#e94560';
+    const m=L.marker([p.lat,p.lng],{icon:createIcon(color)}).bindPopup(popupHTML(p),{maxWidth:300});
+    markers[p.id]=m;
+    m.addTo(map);
+  });
+  applyFilters();
+});
+</script>
+</body>
 </html>
