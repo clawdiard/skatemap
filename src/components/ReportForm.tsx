@@ -1,7 +1,6 @@
 import { useState, type FormEvent } from 'react';
-import { getToken, getUser, isSignedIn } from '../utils/auth';
+import { submitReport, isRateLimited } from '../services/submitReport';
 import type { ParkInfo } from '../types/park';
-import AuthButton from './AuthButton';
 
 interface ReportFormProps {
   park: ParkInfo;
@@ -31,13 +30,6 @@ const SURFACE_LABELS = ['Terrible', 'Poor', 'Average', 'Good', 'Perfect'];
 const CROWD_ICONS = ['👤', '👥', '👥', '🏟️', '🏟️'];
 const CROWD_LABELS = ['Empty', 'Light', 'Moderate', 'Packed', 'Sardines'];
 
-const STATUS_DISPLAY: Record<string, string> = {
-  dry: '✅ Dry',
-  partially_wet: '🟡 Partially Wet',
-  wet: '❌ Wet',
-  closed: '🚫 Closed',
-};
-
 export default function ReportForm({ park, onClose, onSubmitted }: ReportFormProps) {
   const [status, setStatus] = useState<string | null>(null);
   const [surface, setSurface] = useState<number | null>(null);
@@ -45,9 +37,13 @@ export default function ReportForm({ park, onClose, onSubmitted }: ReportFormPro
   const [hazardFeatures, setHazardFeatures] = useState<Set<string>>(new Set());
   const [hazardNotes, setHazardNotes] = useState<Record<string, string>>({});
   const [notes, setNotes] = useState('');
+  const [nickname, setNickname] = useState('');
+  const [honeypot, setHoneypot] = useState(''); // anti-spam hidden field
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const rateLimited = isRateLimited(park.slug);
 
   const toggleHazard = (featureId: string) => {
     const next = new Set(hazardFeatures);
@@ -65,53 +61,27 @@ export default function ReportForm({ park, onClose, onSubmitted }: ReportFormPro
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!status) return;
-    if (!isSignedIn()) return;
+
+    // Honeypot check — if filled, silently "succeed"
+    if (honeypot) {
+      setSubmitted(true);
+      return;
+    }
 
     setSubmitting(true);
     setError(null);
 
-    const token = getToken()!;
-    const user = getUser();
-    const slug = park.slug;
-
-    const hazardLines = Array.from(hazardFeatures).map(fId => {
-      const feat = park.features.find(f => f.id === fId);
-      const note = hazardNotes[fId];
-      return `- ${feat?.type ?? fId}${note ? `: ${note}` : ''}`;
-    });
-
-    const body = [
-      `## Condition Report`,
-      ``,
-      `**Park:** ${park.name} (\`${slug}\`)`,
-      `**Status:** ${STATUS_DISPLAY[status] ?? status}`,
-      surface != null ? `**Surface Quality:** ${surface}/5` : null,
-      crowd != null ? `**Crowd Level:** ${crowd}/5` : null,
-      hazardLines.length > 0 ? `**Hazards:**\n${hazardLines.join('\n')}` : `**Hazards:** None`,
-      notes ? `**Notes:** ${notes}` : null,
-      `**Timestamp:** ${new Date().toISOString()}`,
-    ]
-      .filter(Boolean)
-      .join('\n');
-
     try {
-      const res = await fetch('https://api.github.com/repos/clawdiard/skatemap/issues', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: `🛹 ${park.name} — ${STATUS_DISPLAY[status] ?? status}`,
-          body,
-          labels: ['condition-report', `park:${slug}`],
-        }),
+      await submitReport({
+        park: park.slug,
+        status,
+        surface,
+        crowd,
+        nickname: nickname.trim() || 'anonymous',
+        notes: notes.trim(),
+        timestamp: new Date().toISOString(),
+        ua: navigator.userAgent,
       });
-
-      if (!res.ok) {
-        const errData = await res.json().catch(() => null);
-        throw new Error(errData?.message || `GitHub API error ${res.status}`);
-      }
 
       const report: SubmittedReport = {
         status,
@@ -120,7 +90,7 @@ export default function ReportForm({ park, onClose, onSubmitted }: ReportFormPro
         hazards: Array.from(hazardFeatures),
         notes,
         timestamp: new Date().toISOString(),
-        reporter: user?.login ?? 'anonymous',
+        reporter: nickname.trim() || 'anonymous',
       };
 
       setSubmitted(true);
@@ -155,13 +125,35 @@ export default function ReportForm({ park, onClose, onSubmitted }: ReportFormPro
           <button onClick={onClose} className="text-gray-400 hover:text-white text-xl">✕</button>
         </div>
 
-        {!isSignedIn() ? (
-          <div className="space-y-3">
-            <p className="text-sm text-gray-400">Sign in with GitHub to submit reports.</p>
-            <AuthButton />
-          </div>
+        {rateLimited ? (
+          <p className="text-sm text-yellow-400">You recently reported this park. Please wait 10 minutes between reports.</p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Honeypot — hidden from real users */}
+            <div className="absolute opacity-0 pointer-events-none" aria-hidden="true" tabIndex={-1}>
+              <input
+                type="text"
+                name="website_url"
+                autoComplete="off"
+                value={honeypot}
+                onChange={e => setHoneypot(e.target.value)}
+                tabIndex={-1}
+              />
+            </div>
+
+            {/* Nickname */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Nickname (optional)</label>
+              <input
+                type="text"
+                value={nickname}
+                onChange={e => setNickname(e.target.value)}
+                placeholder="sk8er_mike"
+                maxLength={30}
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-500"
+              />
+            </div>
+
             {/* Status */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">Conditions *</label>
@@ -279,6 +271,8 @@ export default function ReportForm({ park, onClose, onSubmitted }: ReportFormPro
             >
               {submitting ? 'Submitting...' : 'Submit Report 🛹'}
             </button>
+
+            <p className="text-xs text-gray-500 text-center">No account needed — reports are anonymous</p>
           </form>
         )}
       </div>

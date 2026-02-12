@@ -1,0 +1,50 @@
+name: Process Pending Reports
+on:
+  push:
+    paths:
+      - 'reports/pending/**'
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Find new pending reports
+        id: find
+        run: |
+          FILES=$(git diff --name-only --diff-filter=A HEAD~1 HEAD -- 'reports/pending/*.json' || true)
+          if [ -z "$FILES" ]; then
+            echo "No new pending reports found."
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=true" >> "$GITHUB_OUTPUT"
+            echo "$FILES" > /tmp/pending_files.txt
+          fi
+
+      - name: Process each report
+        if: steps.find.outputs.found == 'true'
+        run: |
+          while IFS= read -r file; do
+            echo "Processing $file..."
+            node scripts/process-pending-report.js "$file"
+            rm -f "$file"
+          done < /tmp/pending_files.txt
+
+      - name: Commit changes
+        if: steps.find.outputs.found == 'true'
+        run: |
+          git config user.name "parkcheck-bot"
+          git config user.email "bot@parkcheck.app"
+          git add data/ reports/
+          git diff --cached --quiet || git commit -m "Process pending condition reports"
+          git push
