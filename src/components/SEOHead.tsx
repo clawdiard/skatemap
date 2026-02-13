@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet-async';
+import { useEffect } from 'react';
 
 interface SEOHeadProps {
   title?: string;
@@ -11,6 +11,20 @@ interface SEOHeadProps {
 
 const BASE_URL = 'https://clawdiard.github.io/skatemap';
 
+function setMeta(property: string, content: string) {
+  let el = document.querySelector(`meta[property="${property}"], meta[name="${property}"]`) as HTMLMetaElement | null;
+  if (!el) {
+    el = document.createElement('meta');
+    if (property.startsWith('og:') || property.startsWith('twitter:')) {
+      el.setAttribute('property', property);
+    } else {
+      el.setAttribute('name', property);
+    }
+    document.head.appendChild(el);
+  }
+  el.content = content;
+}
+
 export function SEOHead({
   title = 'ParkCheck — NYC Skatepark Conditions',
   description = 'Real-time conditions for every NYC skatepark. Never waste a trip.',
@@ -22,22 +36,28 @@ export function SEOHead({
   const fullTitle = title.includes('ParkCheck') ? title : `${title} | ParkCheck NYC`;
   const url = `${BASE_URL}${path}`;
 
-  return (
-    <Helmet>
-      <title>{fullTitle}</title>
-      <meta name="description" content={description} />
-      <link rel="canonical" href={url} />
+  useEffect(() => {
+    document.title = fullTitle;
 
-      <meta property="og:type" content="website" />
-      <meta property="og:title" content={ogTitle || fullTitle} />
-      <meta property="og:description" content={ogDescription || description} />
-      <meta property="og:image" content={ogImage} />
-      <meta property="og:url" content={url} />
+    setMeta('description', description);
+    let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'canonical';
+      document.head.appendChild(link);
+    }
+    link.href = url;
 
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={ogTitle || fullTitle} />
-      <meta name="twitter:description" content={ogDescription || description} />
-      <meta name="twitter:image" content={ogImage} />
-    </Helmet>
-  );
+    setMeta('og:type', 'website');
+    setMeta('og:title', ogTitle || fullTitle);
+    setMeta('og:description', ogDescription || description);
+    setMeta('og:image', ogImage);
+    setMeta('og:url', url);
+    setMeta('twitter:card', 'summary_large_image');
+    setMeta('twitter:title', ogTitle || fullTitle);
+    setMeta('twitter:description', ogDescription || description);
+    setMeta('twitter:image', ogImage);
+  }, [fullTitle, description, url, ogTitle, ogDescription, ogImage]);
+
+  return null;
 }

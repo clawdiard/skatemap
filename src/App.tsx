@@ -1,6 +1,5 @@
 import { useEffect, useCallback, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { HelmetProvider } from 'react-helmet-async';
 import { initNotifications, incrementVisitCount } from './utils/notifications';
 import { OfflineBanner } from './components/OfflineBanner';
 import { InstallPrompt } from './components/InstallPrompt';
@@ -39,7 +38,7 @@ export default function App() {
   useDataPolling(handleInvalidate);
 
   return (
-    <HelmetProvider>
+    
       <BrowserRouter basename={BASE}>
         <OfflineBanner />
         <Header />
@@ -57,6 +56,6 @@ export default function App() {
         <TabBar />
         <InstallPrompt />
       </BrowserRouter>
-    </HelmetProvider>
+    
   );
 }
