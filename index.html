@@ -98,7 +98,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 <script>
 const boroughColors = {Manhattan:'#e94560',Brooklyn:'#00b4d8',Queens:'#48bfe3',Bronx:'#f9c74f','Staten Island':'#90be6d'};
 
-const map = L.map('map',{zoomControl:true}).setView([40.7128,-73.97],11.5);
+const map = L.map('map',{zoomControl:true}).setView([40.7128,-74.006],11);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
   attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
   maxZoom:19
@@ -198,6 +198,12 @@ fetch('data/parks.json').then(r=>r.json()).then(data=>{
     m.addTo(map);
   });
   applyFilters();
+  // Fit map to show all park markers
+  const allMarkers = Object.values(markers);
+  if(allMarkers.length){
+    const group = L.featureGroup(allMarkers);
+    map.fitBounds(group.getBounds().pad(0.05));
+  }
 });
 </script>
 </body>
